@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seekerhut.mySqlMapper.TweetDAO">
+    <select id="getTweetByPerson" resultType="com.seekerhut.model.mysqlModel.Tweet">
+        select * from `tweet` where tweet_author=#{tweetAuthor} and tweet_isdeleted=0 and tweet_ishidden=0 limit #{skip}, #{take}
+    </select>
+
+    <select id="getTweetByIds" resultType="com.seekerhut.model.mysqlModel.Tweet">
+        select * from `tweet` where tweet_id IN
+        <foreach collection='tweetIds' item='id' index='index' open='(' close=')' separator=','>
+            #{id}
+        </foreach>
+        and tweet_isdeleted=0 and tweet_ishidden=0
+    </select>
+
+    <select id="getPersonTweetNum" resultType="java.lang.Long">
+        select count(*) from `tweet` where tweet_author=#{tweetAuthor} and tweet_isdeleted=0 and tweet_ishidden=0
+    </select>
+
+    <select id="sendTweet" resultType="java.lang.Boolean">
+        select count(*) from tweet where tweet_author=#{tweetAuthor} and tweet_isdeleted=0 and tweet_ishidden=0
+    </select>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seekerhut.mySqlMapper.ReplyDAO">
+  <resultMap id="BaseResultMap" type="com.seekerhut.model.mysqlModel.Reply">
+    <id column="reply_id" jdbcType="BIGINT" property="replyId" />
+    <result column="reply_tweetid" jdbcType="BIGINT" property="replyTweetid" />
+    <result column="reply_time" jdbcType="BIGINT" property="replyTime" />
+    <result column="reply_content" jdbcType="VARCHAR" property="replyContent" />
+    <result column="reply_isdeleted" jdbcType="BIT" property="replyIsdeleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    reply_id, reply_tweetid, reply_time, reply_content, reply_isdeleted
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from reply
+    where reply_id = #{replyId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from reply
+    where reply_id = #{replyId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.seekerhut.model.mysqlModel.Reply">
+    insert into reply (reply_id, reply_tweetid, reply_time, 
+      reply_content, reply_isdeleted)
+    values (#{replyId,jdbcType=BIGINT}, #{replyTweetid,jdbcType=BIGINT}, #{replyTime,jdbcType=BIGINT}, 
+      #{replyContent,jdbcType=VARCHAR}, #{replyIsdeleted,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.seekerhut.model.mysqlModel.Reply">
+    insert into reply
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="replyId != null">
+        reply_id,
+      </if>
+      <if test="replyTweetid != null">
+        reply_tweetid,
+      </if>
+      <if test="replyTime != null">
+        reply_time,
+      </if>
+      <if test="replyContent != null">
+        reply_content,
+      </if>
+      <if test="replyIsdeleted != null">
+        reply_isdeleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="replyId != null">
+        #{replyId,jdbcType=BIGINT},
+      </if>
+      <if test="replyTweetid != null">
+        #{replyTweetid,jdbcType=BIGINT},
+      </if>
+      <if test="replyTime != null">
+        #{replyTime,jdbcType=BIGINT},
+      </if>
+      <if test="replyContent != null">
+        #{replyContent,jdbcType=VARCHAR},
+      </if>
+      <if test="replyIsdeleted != null">
+        #{replyIsdeleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.seekerhut.model.mysqlModel.Reply">
+    update reply
+    <set>
+      <if test="replyTweetid != null">
+        reply_tweetid = #{replyTweetid,jdbcType=BIGINT},
+      </if>
+      <if test="replyTime != null">
+        reply_time = #{replyTime,jdbcType=BIGINT},
+      </if>
+      <if test="replyContent != null">
+        reply_content = #{replyContent,jdbcType=VARCHAR},
+      </if>
+      <if test="replyIsdeleted != null">
+        reply_isdeleted = #{replyIsdeleted,jdbcType=BIT},
+      </if>
+    </set>
+    where reply_id = #{replyId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.seekerhut.model.mysqlModel.Reply">
+    update reply
+    set reply_tweetid = #{replyTweetid,jdbcType=BIGINT},
+      reply_time = #{replyTime,jdbcType=BIGINT},
+      reply_content = #{replyContent,jdbcType=VARCHAR},
+      reply_isdeleted = #{replyIsdeleted,jdbcType=BIT}
+    where reply_id = #{replyId,jdbcType=BIGINT}
+  </update>
+</mapper>

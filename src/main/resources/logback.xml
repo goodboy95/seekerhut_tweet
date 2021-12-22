@@ -1,0 +1,71 @@
+<configuration scan="true" scanPeriod="60 seconds" debug="false">  
+    <property name="logPath" value="/opt/seekerhut/forum/logs" />
+    <property name="logLevel" value="ALL" />
+    <contextName>logtest</contextName>
+    
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} %-5level %logger{1} - %msg%n</Pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="FILEOUT-DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${logPath}/debug/%d{yyyy-MM-dd}.log</FileNamePattern>
+            <MaxHistory>365</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{1} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="FILEOUT-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${logPath}/info/%d{yyyy-MM-dd}.log</FileNamePattern>
+            <MaxHistory>365</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{1} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="FILEOUT-WARNS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${logPath}/warns/%d{yyyy-MM-dd}.log</FileNamePattern>
+            <MaxHistory>365</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{1} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="com.seekerhut" level="DEBUG">
+        <appender-ref ref="FILEOUT-DEBUG"/>
+        <appender-ref ref="FILEOUT-INFO"/>
+        <appender-ref ref="FILEOUT-WARNS"/>
+    </logger>
+    
+    <root level="INFO">
+        <appender-ref ref="FILEOUT-INFO"/>
+        <appender-ref ref="FILEOUT-WARNS"/>
+    </root> 
+</configuration>

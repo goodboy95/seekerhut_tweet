@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seekerhut.mySqlMapper.TweetDAO">
+  <resultMap id="BaseResultMap" type="com.seekerhut.model.mysqlModel.Tweet">
+    <id column="tweet_id" jdbcType="BIGINT" property="tweetId" />
+    <result column="tweet_content" jdbcType="VARCHAR" property="tweetContent" />
+    <result column="tweet_author" jdbcType="BIGINT" property="tweetAuthor" />
+    <result column="tweet_time" jdbcType="BIGINT" property="tweetTime" />
+    <result column="tweet_isdeleted" jdbcType="BIT" property="tweetIsdeleted" />
+    <result column="tweet_ishidden" jdbcType="BIT" property="tweetIshidden" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    tweet_id, tweet_content, tweet_author, tweet_time, tweet_isdeleted, tweet_ishidden
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tweet
+    where tweet_id = #{tweetId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from tweet
+    where tweet_id = #{tweetId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.seekerhut.model.mysqlModel.Tweet">
+    insert into tweet (tweet_id, tweet_content, tweet_author, 
+      tweet_time, tweet_isdeleted, tweet_ishidden
+      )
+    values (#{tweetId,jdbcType=BIGINT}, #{tweetContent,jdbcType=VARCHAR}, #{tweetAuthor,jdbcType=BIGINT}, 
+      #{tweetTime,jdbcType=BIGINT}, #{tweetIsdeleted,jdbcType=BIT}, #{tweetIshidden,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.seekerhut.model.mysqlModel.Tweet">
+    insert into tweet
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="tweetId != null">
+        tweet_id,
+      </if>
+      <if test="tweetContent != null">
+        tweet_content,
+      </if>
+      <if test="tweetAuthor != null">
+        tweet_author,
+      </if>
+      <if test="tweetTime != null">
+        tweet_time,
+      </if>
+      <if test="tweetIsdeleted != null">
+        tweet_isdeleted,
+      </if>
+      <if test="tweetIshidden != null">
+        tweet_ishidden,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="tweetId != null">
+        #{tweetId,jdbcType=BIGINT},
+      </if>
+      <if test="tweetContent != null">
+        #{tweetContent,jdbcType=VARCHAR},
+      </if>
+      <if test="tweetAuthor != null">
+        #{tweetAuthor,jdbcType=BIGINT},
+      </if>
+      <if test="tweetTime != null">
+        #{tweetTime,jdbcType=BIGINT},
+      </if>
+      <if test="tweetIsdeleted != null">
+        #{tweetIsdeleted,jdbcType=BIT},
+      </if>
+      <if test="tweetIshidden != null">
+        #{tweetIshidden,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.seekerhut.model.mysqlModel.Tweet">
+    update tweet
+    <set>
+      <if test="tweetContent != null">
+        tweet_content = #{tweetContent,jdbcType=VARCHAR},
+      </if>
+      <if test="tweetAuthor != null">
+        tweet_author = #{tweetAuthor,jdbcType=BIGINT},
+      </if>
+      <if test="tweetTime != null">
+        tweet_time = #{tweetTime,jdbcType=BIGINT},
+      </if>
+      <if test="tweetIsdeleted != null">
+        tweet_isdeleted = #{tweetIsdeleted,jdbcType=BIT},
+      </if>
+      <if test="tweetIshidden != null">
+        tweet_ishidden = #{tweetIshidden,jdbcType=BIT},
+      </if>
+    </set>
+    where tweet_id = #{tweetId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.seekerhut.model.mysqlModel.Tweet">
+    update tweet
+    set tweet_content = #{tweetContent,jdbcType=VARCHAR},
+      tweet_author = #{tweetAuthor,jdbcType=BIGINT},
+      tweet_time = #{tweetTime,jdbcType=BIGINT},
+      tweet_isdeleted = #{tweetIsdeleted,jdbcType=BIT},
+      tweet_ishidden = #{tweetIshidden,jdbcType=BIT}
+    where tweet_id = #{tweetId,jdbcType=BIGINT}
+  </update>
+</mapper>

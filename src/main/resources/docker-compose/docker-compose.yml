@@ -1,0 +1,55 @@
+version: '3'
+services: 
+  site-service:
+    restart: always
+    image: tomcat:9.0.33-jdk11-openjdk
+    container_name: forum-site
+    command: /bin/bash -c ""
+    working_dir: /running
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/hosts:/etc/hosts:ro
+    networks: 
+      - backend
+    environment: 
+      "": ""
+    ports: 
+      - "8080:8080"
+    depends_on: 
+      - mysql
+  
+  mysql:
+    restart: always
+    image: xxx
+    container_name: yyy
+    command: /bin/bash -c ""
+    working_dir: /running
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/hosts:/etc/hosts:ro
+    networks: 
+      - backend
+    environment: 
+      "": ""
+    ports: 
+      - "8080:8080"
+    depends_on: 
+      - mysql
+
+  redis:
+    restart: always
+    image: xxx
+    container_name: yyy
+    command: /bin/bash -c ""
+    working_dir: /running
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/hosts:/etc/hosts:ro
+    networks: 
+      - backend
+    environment: 
+      "": ""
+    ports: 
+      - "8080:8080"
+    depends_on: 
+      - mysql

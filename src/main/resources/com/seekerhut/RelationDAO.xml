@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seekerhut.mySqlMapper.RelationDAO">
+  <resultMap id="BaseResultMap" type="com.seekerhut.model.mysqlModel.Relation">
+    <id column="relation_id" jdbcType="BIGINT" property="relationId" />
+    <result column="relation_from" jdbcType="BIGINT" property="relationFrom" />
+    <result column="relation_to" jdbcType="BIGINT" property="relationTo" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    relation_id, relation_from, relation_to
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from relation
+    where relation_id = #{relationId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from relation
+    where relation_id = #{relationId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.seekerhut.model.mysqlModel.Relation">
+    insert into relation (relation_id, relation_from, relation_to
+      )
+    values (#{relationId,jdbcType=BIGINT}, #{relationFrom,jdbcType=BIGINT}, #{relationTo,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.seekerhut.model.mysqlModel.Relation">
+    insert into relation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="relationId != null">
+        relation_id,
+      </if>
+      <if test="relationFrom != null">
+        relation_from,
+      </if>
+      <if test="relationTo != null">
+        relation_to,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="relationId != null">
+        #{relationId,jdbcType=BIGINT},
+      </if>
+      <if test="relationFrom != null">
+        #{relationFrom,jdbcType=BIGINT},
+      </if>
+      <if test="relationTo != null">
+        #{relationTo,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.seekerhut.model.mysqlModel.Relation">
+    update relation
+    <set>
+      <if test="relationFrom != null">
+        relation_from = #{relationFrom,jdbcType=BIGINT},
+      </if>
+      <if test="relationTo != null">
+        relation_to = #{relationTo,jdbcType=BIGINT},
+      </if>
+    </set>
+    where relation_id = #{relationId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.seekerhut.model.mysqlModel.Relation">
+    update relation
+    set relation_from = #{relationFrom,jdbcType=BIGINT},
+      relation_to = #{relationTo,jdbcType=BIGINT}
+    where relation_id = #{relationId,jdbcType=BIGINT}
+  </update>
+</mapper>
