@@ -11,10 +11,13 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolAbstract;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisSentinelPool;
+import redis.clients.jedis.Response;
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.params.SetParams;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -94,6 +97,7 @@ public class JedisHelper {
         jedis.close();
         return JSONObject.parseObject(result, clazz);
     }
+
     public static boolean exists(String key) {
         key = prefix + key;
         Jedis jedis = jedisPool.getResource();
@@ -201,6 +205,18 @@ public class JedisHelper {
         Jedis jedis = jedisPool.getResource();
         var result = jedis.smembers(key);
         jedis.close();
+        return result;
+    }
+
+    public static Set<String> bulk_smember(List<?> keys) {
+        Jedis jedis = jedisPool.getResource();
+        var ppl = jedis.pipelined();
+        for (Object key : keys) {
+            ppl.smembers(key.toString());
+        }
+        var rawResult = ppl.syncAndReturnAll();
+        var result = rawResult.stream().flatMap(obj -> obj == null ? new HashSet<String>().stream() : ((HashSet<String>)obj).stream())
+            .collect(Collectors.toSet());
         return result;
     }
 

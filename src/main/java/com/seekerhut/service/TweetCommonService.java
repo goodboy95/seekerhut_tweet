@@ -16,7 +16,6 @@ import com.seekerhut.utils.CommonFunctions;
 import com.seekerhut.utils.ConstValues;
 import com.seekerhut.utils.JedisHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpServerErrorException.NotImplemented;
 
 @Service("tweetCommonService")
 public class TweetCommonService {
@@ -24,13 +23,11 @@ public class TweetCommonService {
     private TweetDAO tweetMapper;
 
     public List<Tweet> getTimeline(long userId, long prevTimeLabel) {
-        var tweetIdList = new ArrayList<Long>();
         List<Long> friends = JedisHelper.smember("following:" + userId).stream().map(idStr -> Long.parseLong(idStr)).collect(Collectors.toList());
-        
-        //tweetIdList.add(1l);
-        List<Tweet> redisResult = JedisHelper.hmget("tweet_cache", tweetIdList, Tweet.class);
-        tweetIdList.removeAll(redisResult.stream().map(t -> t.getTweetId()).collect(Collectors.toList()));
-        List<Tweet> mysqlResult = tweetMapper.getTweetByIds(tweetIdList);
+        var allTweetIds = JedisHelper.bulk_smember(friends).stream().map(idStr -> Long.parseLong(idStr)).collect(Collectors.toList());
+        List<Tweet> redisResult = JedisHelper.hmget("tweet_cache", allTweetIds, Tweet.class);
+        allTweetIds.removeAll(redisResult.stream().map(t -> t.getTweetId()).collect(Collectors.toList()));
+        List<Tweet> mysqlResult = tweetMapper.getTweetByIds(allTweetIds);
         redisResult.addAll(mysqlResult);
         return redisResult;
     }
