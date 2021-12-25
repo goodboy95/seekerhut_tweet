@@ -7,14 +7,13 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.seekerhut.model.mysqlModel.Tweet;
 import com.seekerhut.mySqlMapper.TweetDAO;
-
 import com.seekerhut.utils.CommonFunctions;
 import com.seekerhut.utils.ConstValues;
 import com.seekerhut.utils.JedisHelper;
+
 import org.springframework.stereotype.Service;
 
 @Service("tweetCommonService")
@@ -54,7 +53,7 @@ public class TweetCommonService {
         return true;
     }
 
-    public boolean likeOrDislikeTweet(long userId, long tweetId, boolean isLike) {
+    public boolean likeOrUnlikeTweet(long userId, long tweetId, boolean isLike) {
         if (isLike && JedisHelper.sadd(ConstValues.RedisKeys.likedTweetPrefix + userId, tweetId)) {
             JedisHelper.incr(ConstValues.RedisKeys.tweetLikesPrefix + tweetId);
             return true;
@@ -67,29 +66,36 @@ public class TweetCommonService {
     }
 
     public int tweetLikes(long tweetId) {
-        return 0;
+        Integer res = JedisHelper.get(ConstValues.RedisKeys.tweetLikesPrefix + tweetId, Integer.class);
+        return res == null ? 0 : res;
     }
 
     public List<Integer> tweetLikeList(long tweetId, int pageSize, int pageIndex) {
         return new ArrayList<>();
     }
 
-    public boolean follow(long userId, long targetUserId) {
-        return false;
-    }
-
-    public boolean unfollow(long userId, long targetUserId) {
-        return false;
+    public boolean followOrUnfollow(long userId, long targetUserId, boolean isFollow) {
+        if (isFollow && JedisHelper.sadd(ConstValues.RedisKeys.followingSetPrefix + userId, targetUserId)) {
+            JedisHelper.incr(ConstValues.RedisKeys.followerNumPrefix + targetUserId);
+            // MQ msg insert into MySQL
+            return true;
+        } else if (!isFollow && JedisHelper.srem(ConstValues.RedisKeys.followingSetPrefix + userId, targetUserId)) {
+            JedisHelper.decr(ConstValues.RedisKeys.followerNumPrefix + targetUserId);
+            // MQ msg remove from MySQL
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // 关注的人数
-    public int followingNum(long userId) {
-        return 0;
+    public long followingNum(long userId) {
+        return JedisHelper.scard(ConstValues.RedisKeys.followingSetPrefix + userId);
     }
 
     // 粉丝人数
-    public int fansNum(long userId) {
-        return 0;
+    public long fansNum(long userId) {
+        return JedisHelper.get(ConstValues.RedisKeys.followerNumPrefix + userId, Long.class);
     }
 
     public List<Integer> followingList(long userId, int pageSize, int pageIndex) {
@@ -97,6 +103,7 @@ public class TweetCommonService {
     }
 
     public List<Integer> fansList(long userId, int pageSize, int pageIndex) {
+        // query from MySQL
         return new ArrayList<>();
     }
 }

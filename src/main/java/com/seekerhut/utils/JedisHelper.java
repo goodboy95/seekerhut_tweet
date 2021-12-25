@@ -95,7 +95,7 @@ public class JedisHelper {
         Jedis jedis = jedisPool.getResource();
         String result = jedis.get(key);
         jedis.close();
-        return JSONObject.parseObject(result, clazz);
+        return result == null ? null : JSONObject.parseObject(result, clazz);
     }
 
     public static boolean exists(String key) {
@@ -120,12 +120,12 @@ public class JedisHelper {
         jedis.close();
     }
 
-    public static String hget(String key, String hashKey) {
+    public static <T> T hget(String key, Object hashKey, Class<T> clazz) {
         key = prefix + key;
         Jedis jedis = jedisPool.getResource();
-        String result = jedis.hget(key, hashKey);
+        String result = jedis.hget(key, hashKey.toString());
         jedis.close();
-        return result;
+        return JSONObject.parseObject(result, clazz);
     }
 
     public static <T, U extends Serializable> List<U> hmget(String key, List<T> hashKey, Class<U> clazz) {
@@ -204,6 +204,14 @@ public class JedisHelper {
         key = prefix + key;
         Jedis jedis = jedisPool.getResource();
         var result = jedis.smembers(key);
+        jedis.close();
+        return result;
+    }
+
+    public static long scard(String key) {
+        key = prefix + key;
+        Jedis jedis = jedisPool.getResource();
+        var result = jedis.scard(key);
         jedis.close();
         return result;
     }

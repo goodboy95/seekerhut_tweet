@@ -9,5 +9,8 @@ public class ConstValues {
         public static String PrimaryKeyIdPrefix = "PrimaryKeyId:";
         public static String likedTweetPrefix = "likedTweet:";
         public static String tweetLikesPrefix = "tweetLikes:";
+        public static String followerNumPrefix = "followerNum:";
+        public static String followingSetPrefix = "followingSet:";
+        
     }
 }
