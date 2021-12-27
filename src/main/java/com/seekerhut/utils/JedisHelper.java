@@ -1,6 +1,11 @@
 package com.seekerhut.utils;
 
-import com.alibaba.fastjson.JSON;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.alibaba.fastjson.JSONObject;
 import com.seekerhut.model.config.RedisConfig;
 
@@ -11,16 +16,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolAbstract;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisSentinelPool;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.params.SetParams;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @EnableConfigurationProperties(RedisConfig.class)
 public class JedisHelper {
@@ -63,7 +59,7 @@ public class JedisHelper {
                 : new JedisSentinelPool(masterName, sentinelNodes, jedisPoolConfig, timeout, password, database);
         }
     }
-
+    //#region ordinary data
     public static void set(String key, Object val) {
         set(key, val, 0);
     }
@@ -106,6 +102,40 @@ public class JedisHelper {
         return result;
     }
 
+    public static long incr(String key) {
+        key = prefix + key;
+        Jedis jedis = jedisPool.getResource();
+        long result = jedis.incr(key);
+        jedis.close();
+        return result;
+    }
+
+    public static long incrBy(String key, int num) {
+        key = prefix + key;
+        Jedis jedis = jedisPool.getResource();
+        long result = jedis.incrBy(key, num);
+        jedis.close();
+        return result;
+    }
+
+    public static long decr(String key) {
+        key = prefix + key;
+        Jedis jedis = jedisPool.getResource();
+        long result = jedis.decr(key);
+        jedis.close();
+        return result;
+    }
+
+    public static long decrBy(String key, int num) {
+        key = prefix + key;
+        Jedis jedis = jedisPool.getResource();
+        long result = jedis.decrBy(key, num);
+        jedis.close();
+        return result;
+    }
+    //#endregion
+
+    //#region hashtable
     public static void hset(String key, Object hashKey, Object val) {
         key = prefix + key;
         Jedis jedis = jedisPool.getResource();
@@ -144,38 +174,7 @@ public class JedisHelper {
         jedis.close();
         return result;
     }
-
-    public static long incr(String key) {
-        key = prefix + key;
-        Jedis jedis = jedisPool.getResource();
-        long result = jedis.incr(key);
-        jedis.close();
-        return result;
-    }
-
-    public static long incrBy(String key, int num) {
-        key = prefix + key;
-        Jedis jedis = jedisPool.getResource();
-        long result = jedis.incrBy(key, num);
-        jedis.close();
-        return result;
-    }
-
-    public static long decr(String key) {
-        key = prefix + key;
-        Jedis jedis = jedisPool.getResource();
-        long result = jedis.decr(key);
-        jedis.close();
-        return result;
-    }
-
-    public static long decrBy(String key, int num) {
-        key = prefix + key;
-        Jedis jedis = jedisPool.getResource();
-        long result = jedis.decrBy(key, num);
-        jedis.close();
-        return result;
-    }
+    //#endregion
 
     public static void rpush(String key, Object data) {
         key = prefix + key;
@@ -184,6 +183,7 @@ public class JedisHelper {
         jedis.close();
     }
 
+    //#region set/zset
     public static boolean sadd(String key, Object data) {
         key = prefix + key;
         Jedis jedis = jedisPool.getResource();
@@ -234,4 +234,5 @@ public class JedisHelper {
     //     jedis.zadd(key,  data.toString());
     //     jedis.close();
     // }
+    //#endregion
 }

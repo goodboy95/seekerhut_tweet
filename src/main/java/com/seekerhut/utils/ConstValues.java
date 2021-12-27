@@ -11,6 +11,7 @@ public class ConstValues {
         public static String tweetLikesPrefix = "tweetLikes:";
         public static String followerNumPrefix = "followerNum:";
         public static String followingSetPrefix = "followingSet:";
-        
+        public static String outBoxPrefix = "outBox:";
+        public static String tweetCache = "tweetCache";
     }
 }
