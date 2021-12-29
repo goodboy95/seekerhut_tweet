@@ -93,19 +93,24 @@ public class CommonFunctions {
     private static HashMap<String, Long> currentPrimaryKeyMaxId = new HashMap<>();
     private static HashMap<String, String> prevUsingKey = new HashMap<>();
 
+    /**
+     * 主键ID发号器，生成趋势递增ID，保证同一秒内生成的ID可以排到一起（目前使用Redis防止意外重启后ID回退，可以改造为记录到文件）
+     * @param tableName 表名
+     * @return 主键ID
+     */
     public static long generatePrimaryKeyId(String tableName) {
-        // 每次从redis申请100000个id空间在本机使用，减少和redis的交互次数
-        var idsPerRequest = 100000;
+        // 每次从redis申请1000个id空间在本机使用，减少和redis的交互次数
+        var idsPerRequest = 1000;
         var baseTime = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
         var curTime = LocalDateTime.now();
-        // 当前时间距离baseTime相隔的分钟数，26bit（127.6年）
-        var hoursToBaseTime = (int)((curTime.toEpochSecond(ZoneOffset.UTC) - baseTime.toEpochSecond(ZoneOffset.UTC)) / 3600);
+        // 当前时间距离baseTime相隔的秒数，32bit（136.2年）
+        var minutesToBaseTime = (int)((curTime.toEpochSecond(ZoneOffset.UTC) - baseTime.toEpochSecond(ZoneOffset.UTC)) / 60);
         // redis节点编号，9bit（512个）
         var nodeNum = 0;
-        // 余下的28bit用来生成id，大约每毫秒4000个
-        long idBase = (hoursToBaseTime << 37) + (nodeNum << 28);
+        // 余下的22bit用来生成id，大约每节点每秒四百万个(TODO: 如果某一秒把ID用完了，可以返回-1让用户重新取号)
+        long idBase = (minutesToBaseTime << 37) + (nodeNum << 28);
         var tblKeyBase = ConstValues.RedisKeys.PrimaryKeyIdPrefix + tableName;
-        var tblKey = String.format("%s_%d_%d", tblKeyBase, hoursToBaseTime, nodeNum);
+        var tblKey = String.format("%s_%d_%d", tblKeyBase, minutesToBaseTime, nodeNum);
         
         long maxId = currentPrimaryKeyMaxId.getOrDefault(tblKey, 0l);
         long finalPKId = currentPrimaryKeyId.getOrDefault(tblKey, new AtomicLong(0l)).incrementAndGet();

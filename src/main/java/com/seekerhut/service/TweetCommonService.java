@@ -22,7 +22,15 @@ public class TweetCommonService {
     @Resource
     private TweetDAO tweetMapper;
 
-    public List<Tweet> getTimeline(long userId, long prevTimeLabel, int size) {
+    /**
+     * 拉取时间线
+     * @param userId 用户id
+     * @param timelineId 时间线id（传0代表重新生成时间线）
+     * @param prevTimeLabel 当前时间线，浏览过的最后一条文章的时间标签
+     * @param size 每次拉取的数量
+     * @return
+     */
+    public List<Tweet> getTimeline(long userId, long timelineId, long prevTimeLabel, int size) {
         List<String> friendOutBoxKeys = JedisHelper.smember(RedisKeys.followingSetPrefix + userId)
             .stream().map(idStr -> RedisKeys.outBoxPrefix + idStr).collect(Collectors.toList());
         var allTweetIds = JedisHelper.bulk_smember(friendOutBoxKeys).stream().map(idStr -> Long.parseLong(idStr))
@@ -40,7 +48,7 @@ public class TweetCommonService {
         return null;
     }
 
-    public boolean sendTweet(long userId, String content) {
+    public boolean sendTweet(long userId, String content, String tagIds) {
         var masterId = CommonFunctions.generatePrimaryKeyId("tweet");
         var curTime = LocalDateTime.now();
         var tweet = new Tweet() {
